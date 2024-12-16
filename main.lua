@@ -1,15 +1,19 @@
+require "light"
+
 local width,height = 640,480
-local world
 local ball
+
+drawSingleLight = drawRaycastedLines
 
 love.load = function()
   love.window.setMode(width,height)
   love.physics.setMeter(64)
   world = love.physics.newWorld(0,9.81*64)
 
-  --- World boundaries
   local space = 10
   local s,b,f
+
+  --- Create boundaries
   b = love.physics.newBody(world)
   s = love.physics.newChainShape(
     true,
@@ -43,6 +47,11 @@ love.load = function()
 end
 
 love.draw = function ()
+  local x,y = ball:getWorldCenter()
+
+  love.graphics.setColor(0.5,0.5,0.5)
+  drawSingleLight(x,y)
+
   love.graphics.setColor(1, 1, 1)
   for _, body in pairs(world:getBodies()) do
       for _, fixture in pairs(body:getFixtures()) do
