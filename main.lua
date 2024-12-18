@@ -3,7 +3,7 @@ require "light"
 local width,height = 640,480
 local ball
 
-drawSingleLight = drawRaycastedLines
+drawSingleLight = drawRaycastedFan
 
 love.load = function()
   love.window.setMode(width,height)
