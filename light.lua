@@ -89,7 +89,7 @@ function drawRaycastedFan(x,y)
   lightShader:send("lightPos",{x,y})
 
   --- Draw the fan
-  love.graphics.setShader(lightShader)
-  love.graphics.polygon("fill",vertices)
-  love.graphics.setShader()
+  -- love.graphics.setShader(lightShader)
+  love.graphics.polygon("line",vertices)
+  -- love.graphics.setShader()
 end
