@@ -26,13 +26,13 @@ love.load = function()
   f:setRestitution(1)
 
   --- Create a torch
-  b = love.physics.newBody(world, 100, 100, "dynamic")
+  b = love.physics.newBody(world, 130, 300, "static")
   s = love.physics.newCircleShape(10)
   f = love.physics.newFixture(b, s)
   f:setRestitution(1)
 
   ball = b
-  b:applyLinearImpulse(50,0)
+  -- b:applyLinearImpulse(50,0)
 
   --- Create a couple squares
   --- So that the light has something interesting
@@ -50,7 +50,7 @@ love.draw = function ()
   local x,y = ball:getWorldCenter()
 
   love.graphics.setColor(0.5,0.5,0.5)
-  drawSingleLight(x,y)
+  drawSingleLight(world,x,y)
 
   love.graphics.setColor(1, 1, 1)
   for _, body in pairs(world:getBodies()) do

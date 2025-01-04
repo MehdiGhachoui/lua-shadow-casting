@@ -14,17 +14,44 @@ local dx,dy
 
 --- It projects light away from the source.
 --- Light only reaches the places that the source can see.
+--- @param world love.World
 --- @param x number -- the x position of the light
 --- @param y number -- the y position of the light
 --- @param skipLines boolean -- if true the function won't draw any lines
-function drawRaycastedLines(x,y,skipLines)
+function drawRaycastedLines(world,x,y,skipLines)
   local slices = 128 --- Number of the rays comming out of the ligth
   local radius = 1000
   local points = {}
+  local vertices = {}
+  local angles = {}
+
+  for _,body in pairs(world:getBodies()) do
+    for _, fixture in pairs(body:getFixtures()) do
+      local shape = fixture:getShape()
+      if shape:typeOf("PolygonShape") then
+        local a,b,c,d,e,f,g,h = body:getWorldPoints(shape:getPoints())
+        vertices[#vertices+1] = {x=a,y=b}
+        vertices[#vertices+1] = {x=c,y=d}
+        vertices[#vertices+1] = {x=e,y=f}
+        vertices[#vertices+1] = {x=g,y=h}
+      end
+    end
+  end
+
+  for i = 1, #vertices do
+    local ang = math.atan2(vertices[i].y - y, vertices[i].x - x)
+    angles[#angles+1] = { angle = ang - 0.0005 };
+		angles[#angles+1] = { angle = ang + 0.0005 };
+  end
+
+  table.sort(angles, function(a, b)
+      return a.angle < b.angle
+    end
+  );
 
   --- Cast rays in all direction
-  for theta = 0, math.pi*2, math.pi/slices*2 do -- why ?
-    dx,dy = math.cos(theta),math.sin(theta)
+  for  i= 1, #angles do
+    dx,dy = math.cos(angles[i].angle),math.sin(angles[i].angle)
 
     --- Cast outward
     dx = dx*radius
@@ -62,11 +89,11 @@ function rayCastCallback(fixture,cx,cy,xn,yn,fraction)
     closestY = cy
   end
   --- Keep tracing the ray no matter what
-  return -1
+  return 1
 end
 
-function drawRaycastedFan(x,y)
-  local points = drawRaycastedLines(x,y,true)
+function drawRaycastedFan(world,x,y)
+  local points = drawRaycastedLines(world,x,y,true)
 
   -- Now, we draw a "fan" for every point in the light
   -- Pretty much all this has to do is rearrange the data
@@ -86,7 +113,7 @@ function drawRaycastedFan(x,y)
   end
 
   --- Send the light's location
-  lightShader:send("lightPos",{x,y})
+  -- lightShader:send("lightPos",{x,y})
 
   --- Draw the fan
   -- love.graphics.setShader(lightShader)
